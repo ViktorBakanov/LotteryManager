@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <title>Лотерейный менеджер</title>
+        <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/11281/11281165.png" type="image/x-icon" />
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <style>
+            td {padding:5px;}
+            button{margin: 5px;}
+        </style>
+    </head>    
+    <body>
+        <div class="container" style="width:40%;margin-top:7%">
+            <div id="liveAlert"></div>
+            <nav>
+                <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                    <button class="nav-link active" id="nav-add-tab" data-bs-toggle="tab" data-bs-target="#nav-add" type="button" role="tab" aria-controls="nav-add" aria-selected="true">Добавить</button>
+                    <button class="nav-link" id="nav-delete-tab" data-bs-toggle="tab" data-bs-target="#nav-delete" type="button" role="tab" aria-controls="nav-delete" aria-selected="false">Удалить</button>
+                    <button class="nav-link" id="nav-view-tab" data-bs-toggle="tab" data-bs-target="#nav-view" type="button" role="tab" aria-controls="nav-view" aria-selected="false">Просмотреть</button>
+                    <button class="nav-link" id="nav-сheck-tab" data-bs-toggle="tab" data-bs-target="#nav-check" type="button" role="tab" aria-controls="nav-check" aria-selected="false">Проверить</button>
+                    <button class="nav-link" id="nav-result-tab" data-bs-toggle="tab" data-bs-target="#nav-result" type="button" role="tab" aria-controls="nav-result" aria-selected="false">Результат</button>
+                </div>
+            </nav>
+            <div class="tab-content" id="nav-tabContent">
+                <div class="tab-pane fade active show" id="nav-add" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0" style="margin-top: 25px;">
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="lottery_date">Дата лотереи</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="date" id="lottery_date" name="lottery_date" required>
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="is_won">Выиграли?</label>
+                        <div class="col-sm-8">
+                            <input class="form-check-input" type="checkbox" value="" id="is_won">
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label for="numbers" class="form-label">Введите цифры</label>
+                        <textarea class="form-control" id="numbers" rows="3" required></textarea>
+                    </div>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button type="button" class="btn btn-success" id="addbutton">Добавить</button>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nav-delete" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0" style="margin-top: 25px;">
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="lottery_date_del">Дата лотереи</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="date" id="lottery_date_del" name="lottery_date" required>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button type="button" class="btn btn-danger" id="delbutton">Удалить</button>
+                    </div>
+                </div>
+                <div class="tab-pane fade" id="nav-view" role="tabpanel" aria-labelledby="nav-home-tab" tabindex="0" style="margin-top: 25px;">
+                    <table class="table table-striped" id="lotteryData">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Число</th>
+                                <th scope="col">Выиграло?</th>
+                                <th scope="col">Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBody">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="nav-check" role="tabpanel" aria-labelledby="nav-check-tab" tabindex="0" style="margin-top: 25px;">
+                    <div class="mb-3 row">
+                        <label class="col-sm-3 col-form-label" for="lottery_date_check">Дата лотереи</label>
+                        <div class="col-sm-8">
+                            <input class="form-control" type="date" id="lottery_date_check" name="lottery_date" required>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button type="button" class="btn btn-primary" id="checkbutton">Найти</button>
+                    </div>
+                    <table class="table table-striped" id="lotteryDataByDate">
+                        <thead>
+                            <tr>
+                                <th scope="col">Id</th>
+                                <th scope="col">Число</th>
+                                <th scope="col">Выиграло?</th>
+                                <th scope="col">Дата</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodyByDate">
+                        </tbody>
+                    </table>
+                </div>
+                <div class="tab-pane fade" id="nav-result" role="tabpanel" aria-labelledby="nav-result-tab" tabindex="0" style="margin-top: 25px;">
+                    <div class="container text-center" style="width:45%;">
+                        <div class="row justify-content-md-center" style="margin-bottom: 20px;">
+                            <div class="col" align="center">
+                                <input type="text" class="form-control" id="first" disabled readonly>
+                            </div>
+                            <div class="col" align="center">
+                                <input type="text" class="form-control" id="second" disabled readonly>
+                            </div>
+                            <div class="col" align="center">
+                                <input type="text" class="form-control" id="third" disabled readonly>
+                            </div>
+                            <div class="col" align="center">
+                                <input type="text" class="form-control" id="four" disabled readonly>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2 col-6 mx-auto">
+                        <button type="button" class="btn btn-info" id="genbutton">Определить выигрышные номера</button>
+                    </div>
+                    <table class="table table-striped" id="lotteryGeneration">
+                        <thead>
+                            <tr>
+                                <th scope="col">Число</th>
+                                <th scope="col">Индекс</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tBodyGeneration">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>  
+        <script>
+            //Инициализируем шаблон алёрта
+            const alertPlaceholder = document.getElementById('liveAlert');
+            const appendAlert = (message, type) => {
+                const wrapper = document.createElement('div')
+                wrapper.innerHTML = [
+                    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+                    `   <div>${message}</div>`,
+                    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+                    '</div>'
+                ].join('')
+
+                alertPlaceholder.append(wrapper)
+            }
+
+        //****************B E C K E N D****************//
+            // Добавление лотереи
+            async function createLottery(lotDate, IsWon, numbers) {
+    
+                const response = await fetch("api/create_lottery", {
+                    method: "POST",
+                    headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        lottery_date: lotDate,
+                        is_won: IsWon,
+                        nums: numbers
+                    })
+                });
+                if (response.ok === true) {
+                    appendAlert('Успешно добавлено в базу данных!', 'success');
+                }
+                else {
+                    const error = await response.json();
+                    appendAlert(error.message, 'danger');
+                }
+            }
+
+            //Удаление лотереи
+            async function deleteLottery(lotDate) {
+    
+                const response = await fetch("api/delete_lottery", {
+                    method: "POST",
+                    headers: { "Accept": "application/json", "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                        lottery_date: lotDate
+                    })
+                });
+                if (response.ok === true) {
+                    appendAlert('Успешно удалено из базы данных!', 'success');
+                }
+                else {
+                    const error = await response.json();
+                    appendAlert(error.message, 'danger');
+                }
+            }
+
+            //Посмотреть данные по последней лотерее
+            async function getLottery() {
+                // отправляет запрос и получаем ответ
+                const response = await fetch("/api/last_lottery", {
+                    method: "GET",
+                    headers: { "Accept": "application/json" }
+                });
+                // если запрос прошел нормально
+                if (response.ok === true) {
+                    // получаем данные
+                    const lots = await response.json();
+                    const rows = document.querySelector("tbody");
+                    // добавляем полученные элементы в таблицу
+                    lots.forEach(lot => rows.append(row(lot)));
+                }
+                else {
+                    const error = await response.json();
+                    appendAlert(error.message, 'danger');
+                }
+            }
+
+            //Посмотреть данные по последней лотерее
+            async function getLotteryByDate(lotDate) {
+                // отправляет запрос и получаем ответ
+                const response = await fetch(`/api/get_lottery_by_date/${lotDate}`, {
+                    method: "GET",
+                    headers: { "Accept": "application/json"}
+                });
+                // если запрос прошел нормально
+                if (response.ok === true) {
+                    // получаем данные
+                    const lots = await response.json();
+                    const rows = document.getElementById("tBodyByDate");
+                    // добавляем полученные элементы в таблицу
+                    lots.forEach(lot => rows.append(row(lot)));
+                }
+                else {
+                    const error = await response.json();
+                    document.getElementById('tBodyByDate').innerHTML = "";
+                    appendAlert(error.message, 'danger');
+                }
+            }
+
+            //Получить результаты лотереи
+            async function getLotteryResults() {
+                // отправляет запрос и получаем ответ
+                const response = await fetch("/api/get_lottery_results", {
+                    method: "GET",
+                    headers: { "Accept": "application/json"}
+                });
+                // если запрос прошел нормально
+                if (response.ok === true) {
+                    // получаем данные
+                    const lots = await response.json();
+                    const rows = document.getElementById("tBodyGeneration");
+                    document.getElementById('tBodyGeneration').innerHTML = "";
+                    // добавляем полученные элементы в таблицу
+                    lots.forEach(lot => rows.append(rowr(lot)));
+                    //генерируем рандомные значения
+                    randomList = []
+                    for(let i=0;i<4;i++){
+                        random = Math.floor(Math.random() * lots.length);
+                        randomList.push(lots[random]);
+                    }
+                    console.log(randomList);
+                    //Устанавливаем 4 рандомных значения
+                    document.getElementById('first').value = randomList[0].number;
+                    document.getElementById('second').value = randomList[1].number;
+                    document.getElementById('third').value = randomList[2].number;
+                    document.getElementById('four').value = randomList[3].number;
+                }
+                else {
+                    const error = await response.json();
+                    document.getElementById('tBodyGeneration').innerHTML = "";
+                    appendAlert(error.message, 'danger');
+                }
+            }
+
+        //****************H E L P E R S****************//
+            // создание строки для таблицы
+            function row(lot) {
+    
+                const tr = document.createElement("tr");
+                tr.setAttribute("data-rowid", lot.id);
+
+                const idTd = document.createElement("td");
+                idTd.append(lot.id);
+                tr.append(idTd);
+    
+                const numTd = document.createElement("td");
+                numTd.append(lot.number);
+                tr.append(numTd);
+    
+                const wlTd = document.createElement("td");
+                wlTd.append(lot.win_or_lost == true ? 'Да' : 'Нет');
+                tr.append(wlTd);
+    
+                const ldTd = document.createElement("td");
+                ldTd.append(lot.lottery_date);
+                tr.append(ldTd);
+    
+                return tr;
+            }
+
+            function rowr(lot) {
+    
+                const tr = document.createElement("tr");
+                tr.setAttribute("data-rowid", lot.number);
+
+                const numTd = document.createElement("td");
+                numTd.append(lot.number);
+                tr.append(numTd);
+    
+                const countTd = document.createElement("td");
+                countTd.append(lot.count);
+                tr.append(countTd);
+    
+                return tr;
+            }
+
+            function RemoveClass(elem, newClass) {
+                elem.classList.remove(newClass);
+            };
+
+        //****************B U T T O N S****************//
+            //Создать лотерею
+            document.getElementById("addbutton").addEventListener("click", async () => {
+                lottery_date = document.getElementById("lottery_date");
+                is_won = document.querySelector('#is_won');
+                numbers = document.getElementById("numbers");
+                nums = numbers.value.replace(/\n/g," ");
+
+                if(lottery_date.value != '' && numbers.value != ''){
+                    RemoveClass(lottery_date, "is-invalid");
+                    RemoveClass(numbers, "is-invalid");
+                    await createLottery(lottery_date.value,is_won.checked,nums);
+                } 
+                if(lottery_date.value == ''){
+                    lottery_date.className += " is-invalid";
+                }
+                if(numbers.value == ''){
+                    numbers.className += " is-invalid";
+                }
+
+                // сброс данных формы после отправки
+                document.getElementById("numbers").value = "";
+                document.getElementById("is_won").checked = false;
+            });
+
+            //Удалить лотерею
+            document.getElementById("delbutton").addEventListener("click", async () => {
+                lottery_date = document.getElementById("lottery_date_del").value;
+                await deleteLottery(lottery_date);
+
+                // сброс данных формы после отправки
+                document.getElementById("lottery_date_del").value = "";
+            });
+
+            //Найти лотерею
+            document.getElementById("checkbutton").addEventListener("click", async () => {
+                lottery_date = document.getElementById("lottery_date_check");
+                if(lottery_date.value != ''){
+                    RemoveClass(lottery_date, "is-invalid");
+                    document.getElementById('tBodyByDate').innerHTML = "";
+                    await getLotteryByDate(lottery_date.value);
+                } else {
+                    lottery_date.className += " is-invalid";
+                }
+            });
+
+            //Получить список данных по последней лотерее
+            document.getElementById("nav-view-tab").addEventListener("click", async () => {
+                var tbl = document.getElementById('lotteryData');
+                document.getElementById('tBody').innerHTML = "";
+                if (tbl.rows.length == 1) {
+                    await getLottery();
+                }
+            });
+
+            //Определить выигрышные номера
+            document.getElementById("genbutton").addEventListener("click", async () => {
+                await getLotteryResults();
+            });
+        </script>
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    </body>
+</html>
