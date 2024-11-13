@@ -126,7 +126,7 @@
             </div>
         </div>  
         <script>
-            //Инициализируем шаблон алёрта
+            //Initialize bootstrap alert system
             const alertPlaceholder = document.getElementById('liveAlert');
             const appendAlert = (message, type) => {
                 const wrapper = document.createElement('div')
@@ -141,7 +141,7 @@
             }
 
         //****************B E C K E N D****************//
-            // Добавление лотереи
+            //Add lottery data to db
             async function createLottery(lotDate, IsWon, numbers) {
     
                 const response = await fetch("api/create_lottery", {
@@ -162,7 +162,7 @@
                 }
             }
 
-            //Удаление лотереи
+            //Delete lottery data from db
             async function deleteLottery(lotDate) {
     
                 const response = await fetch("api/delete_lottery", {
@@ -181,19 +181,15 @@
                 }
             }
 
-            //Посмотреть данные по последней лотерее
+            //Check last lottery data 
             async function getLottery() {
-                // отправляет запрос и получаем ответ
                 const response = await fetch("/api/last_lottery", {
                     method: "GET",
                     headers: { "Accept": "application/json" }
                 });
-                // если запрос прошел нормально
                 if (response.ok === true) {
-                    // получаем данные
                     const lots = await response.json();
                     const rows = document.querySelector("tbody");
-                    // добавляем полученные элементы в таблицу
                     lots.forEach(lot => rows.append(row(lot)));
                 }
                 else {
@@ -202,19 +198,15 @@
                 }
             }
 
-            //Посмотреть данные по последней лотерее
+            //Get lottery data by exact date
             async function getLotteryByDate(lotDate) {
-                // отправляет запрос и получаем ответ
                 const response = await fetch(`/api/get_lottery_by_date/${lotDate}`, {
                     method: "GET",
                     headers: { "Accept": "application/json"}
                 });
-                // если запрос прошел нормально
                 if (response.ok === true) {
-                    // получаем данные
                     const lots = await response.json();
                     const rows = document.getElementById("tBodyByDate");
-                    // добавляем полученные элементы в таблицу
                     lots.forEach(lot => rows.append(row(lot)));
                 }
                 else {
@@ -224,29 +216,24 @@
                 }
             }
 
-            //Получить результаты лотереи
+            //Get next lottery statistics results 
             async function getLotteryResults() {
-                // отправляет запрос и получаем ответ
                 const response = await fetch("/api/get_lottery_results", {
                     method: "GET",
                     headers: { "Accept": "application/json"}
                 });
-                // если запрос прошел нормально
                 if (response.ok === true) {
-                    // получаем данные
                     const lots = await response.json();
                     const rows = document.getElementById("tBodyGeneration");
                     document.getElementById('tBodyGeneration').innerHTML = "";
-                    // добавляем полученные элементы в таблицу
                     lots.forEach(lot => rows.append(rowr(lot)));
-                    //генерируем рандомные значения
+                    //Generate 4 random values from list
                     randomList = []
                     for(let i=0;i<4;i++){
                         random = Math.floor(Math.random() * lots.length);
                         randomList.push(lots[random]);
                     }
-                    console.log(randomList);
-                    //Устанавливаем 4 рандомных значения
+                    //Set 4 random values to a fields values
                     document.getElementById('first').value = randomList[0].number;
                     document.getElementById('second').value = randomList[1].number;
                     document.getElementById('third').value = randomList[2].number;
@@ -260,7 +247,7 @@
             }
 
         //****************H E L P E R S****************//
-            // создание строки для таблицы
+            //Create tBody table
             function row(lot) {
     
                 const tr = document.createElement("tr");
@@ -285,6 +272,7 @@
                 return tr;
             }
 
+            //Create tBodyByDate table
             function rowr(lot) {
     
                 const tr = document.createElement("tr");
@@ -301,12 +289,13 @@
                 return tr;
             }
 
+            //Remove class from html element
             function RemoveClass(elem, newClass) {
                 elem.classList.remove(newClass);
             };
 
         //****************B U T T O N S****************//
-            //Создать лотерею
+            //Create lottery button
             document.getElementById("addbutton").addEventListener("click", async () => {
                 lottery_date = document.getElementById("lottery_date");
                 is_won = document.querySelector('#is_won');
@@ -325,21 +314,21 @@
                     numbers.className += " is-invalid";
                 }
 
-                // сброс данных формы после отправки
+                //Reset fields values
                 document.getElementById("numbers").value = "";
                 document.getElementById("is_won").checked = false;
             });
 
-            //Удалить лотерею
+            //Delete lottery button
             document.getElementById("delbutton").addEventListener("click", async () => {
                 lottery_date = document.getElementById("lottery_date_del").value;
                 await deleteLottery(lottery_date);
 
-                // сброс данных формы после отправки
+                //Reset lottery date field
                 document.getElementById("lottery_date_del").value = "";
             });
 
-            //Найти лотерею
+            //Find lottery button
             document.getElementById("checkbutton").addEventListener("click", async () => {
                 lottery_date = document.getElementById("lottery_date_check");
                 if(lottery_date.value != ''){
@@ -351,7 +340,7 @@
                 }
             });
 
-            //Получить список данных по последней лотерее
+            //Get last lottery data button
             document.getElementById("nav-view-tab").addEventListener("click", async () => {
                 var tbl = document.getElementById('lotteryData');
                 document.getElementById('tBody').innerHTML = "";
@@ -360,7 +349,7 @@
                 }
             });
 
-            //Определить выигрышные номера
+            //Check results button
             document.getElementById("genbutton").addEventListener("click", async () => {
                 await getLotteryResults();
             });

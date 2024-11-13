@@ -4,6 +4,7 @@ from sqlalchemy.orm import DeclarativeBase, sessionmaker
 from fastapi import FastAPI, status, Body
 from fastapi.responses import FileResponse, JSONResponse
 
+#My Local database
 SQLALCHEMY_DATABASE_URL = 'postgresql://postgres:poqw0912@localhost:5432/Lottery'
 
 engine = create_engine(SQLALCHEMY_DATABASE_URL)
@@ -12,6 +13,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 class Base(DeclarativeBase): pass
 
+#Initiate a data base table
 class Data(Base):
     __tablename__ = "data"
  
@@ -20,29 +22,30 @@ class Data(Base):
     win_or_lost = Column(Boolean,default=False)
     lottery_date = Column(Date)
 
-# создаем таблицы
+#Create table
 Base.metadata.create_all(bind=engine)
 
-# создаем сессию подключения к бд
+#Create session to connect to a teble
 SessionLocal = sessionmaker(autoflush=False, bind=engine)
 db = SessionLocal()
 
 app = FastAPI()
 
+#Loading lottery.html page
 @app.get("/")
 async def main():
     return FileResponse("public/lottery.html")
 
-#Получение данных по последней лотерее
+#Get data on a last lottery
 @app.get("/api/last_lottery")
 def get_lastlottery():
     try:
         return db.query(Data).order_by(desc('lottery_date')).limit(80).all()
     except SQLAlchemyError as e:
         error = str(e)
-        print(error)
         return error
-    
+
+#Get lottery data by date    
 @app.get("/api/get_lottery_by_date/{lotDate}")
 def get_lottery_by_date(lotDate):
     ltds = db.query(Data).filter(Data.lottery_date == lotDate).all()
@@ -54,14 +57,13 @@ def get_lottery_by_date(lotDate):
     else:
         return ltds
 
-#Создать новую лоттерею
+#Create new lottery
 @app.post("/api/create_lottery")
 def insert_new_lottery(data_body = Body()):
     new_lottery = []
     numbers = data_body["nums"].split(' ')
 
-    for i in numbers:
-        new_lottery.append(Data(number = i,win_or_lost = data_body["is_won"],lottery_date = data_body["lottery_date"]))
+    [new_lottery.append(Data(number = i,win_or_lost = data_body["is_won"],lottery_date = data_body["lottery_date"])) for i in numbers]
     
     try:
         db.add_all(new_lottery)
@@ -74,6 +76,7 @@ def insert_new_lottery(data_body = Body()):
             content={ "message": error }
         )
 
+#Get lottery results in to table
 @app.get("/api/get_lottery_results")
 def get_lottery_results():
     query = (
@@ -88,27 +91,21 @@ def get_lottery_results():
         results = query.all()
         if results:
             data = []
-            for r in results:
-                data.append({
-                    "number": r[0],
-                    "count": r[1]
-                })
+            [data.append({"number": r[0], "count": r[1]}) for r in results]
         return JSONResponse(content=data, status_code=200)
     except SQLAlchemyError as e:
         error = str(e)
         return error
     
-#Удалить определённую лотерею по дате
+#Delete lottery data by date
 @app.post("/api/delete_lottery")
 def delete_lottery(data_body = Body()):
     ltds = db.query(Data).filter(Data.lottery_date == data_body["lottery_date"]).all()
-    print(ltds)
     if len(ltds) == 0:
         return JSONResponse(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, 
             content={ "message": "No records on this date!" }
         )
     else:
-        for i in ltds:
-            db.delete(i)
+        [db.delete(i) for i in ltds]
         db.commit()
